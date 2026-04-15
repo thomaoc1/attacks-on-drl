@@ -8,6 +8,7 @@ dependencies = [
     "ale-py>=0.11.2",
     "gymnasium[atari]>=1.2.2",
     "stable-baselines3[extra]>=2.7.0",
+    "torchattacks>=3.3.0",
 ]
 
 [dependency-groups]
