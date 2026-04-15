@@ -22,13 +22,14 @@ class AttackRunner:
         env: VecEnv,
         attacker: BaseAttacker,
         victim: BaseVictim,
-        episode_max_frames: int | float,
+        episode_max_frames: int | float = float('inf'),
+        deterministic_action_selection: bool = True
     ):
         self.env = env
+        self.attacker = attacker
         self.victim = victim
         self.episode_max_frames = episode_max_frames
-        self.attacker = attacker
-        self.deterministic_action_sel = True
+        self.deterministic_action_sel = deterministic_action_selection
 
         self.pbar = None
         self.current_run_n_episodes = 0

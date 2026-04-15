@@ -1,7 +1,7 @@
 from typing import Iterator
 
 from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs
-from torch import torch
+import torch
 from torchattacks import FGSM
 
 from attacks_on_drl.attacker.attacker import BaseAttacker
