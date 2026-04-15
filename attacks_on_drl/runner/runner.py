@@ -27,6 +27,7 @@ class AttackRunner:
         self.victim = victim
         self.episode_max_frames = episode_max_frames
         self.attacker = attacker
+        self.deterministic_action_sel = True
         
         self.pbar = None
         self.current_run_n_episodes = 0
@@ -55,7 +56,7 @@ class AttackRunner:
                 attacker_observation, is_attacked = self.attacker.step(observation)
                 if is_attacked:
                     all_presence[episode] += 1
-                action = self.victim.choose_action(attacker_observation)
+                action = self.victim.choose_action(attacker_observation, deterministic=self.deterministic_action_sel)
                 observation, is_done = self._step_env(action)
                 n_frames += 1
                 
