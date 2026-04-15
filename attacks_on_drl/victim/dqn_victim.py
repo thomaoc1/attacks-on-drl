@@ -1,3 +1,4 @@
+from typing import Iterator
 import torch
 from stable_baselines3 import DQN
 from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs
@@ -6,7 +7,7 @@ from attacks_on_drl.victim.victim import BaseVictim
 
 
 class DQNVictim(BaseVictim[DQN]):
-    def model_parameters(self):
+    def model_parameters(self)  -> Iterator[torch.nn.Parameter]:
         return self.model.q_net.features_extractor.parameters()
     
     def eval_state(self, observation: VecEnvObs) -> torch.Tensor:

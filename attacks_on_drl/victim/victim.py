@@ -1,7 +1,8 @@
-from typing import Generic, TypeVar
-import torch
+from typing import Generic, TypeVar, Iterator
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs
+import torch
+import numpy as np
 
 
 T = TypeVar("T", bound=BaseAlgorithm)
@@ -14,13 +15,13 @@ class BaseVictim(Generic[T]):
             obs = obs.unsqueeze(0)
         return obs
     
-    def choose_action(self, observation: VecEnvObs, deterministic: bool):
+    def choose_action(self, observation: VecEnvObs, deterministic: bool) -> tuple[np.ndarray, tuple[np.ndarray, ...] | None]:
         if isinstance(observation, tuple) or isinstance(observation, dict):
             raise NotImplementedError("Tuple and dictionary observations not supported")
             
         return self.model.predict(observation, deterministic=deterministic)
 
-    def model_parameters(self):
+    def model_parameters(self) -> Iterator[torch.nn.Parameter]:
         raise NotImplementedError("Must be implemented by child class.")
 
     def eval_state(self, observation: VecEnvObs) -> torch.Tensor:
