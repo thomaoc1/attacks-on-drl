@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from stable_baselines3.common.vec_env import VecEnv
+
 import numpy as np
+from stable_baselines3.common.vec_env import VecEnv
 from tqdm import trange
 
 from attacks_on_drl.attacker.attacker import BaseAttacker
@@ -28,15 +29,15 @@ class AttackRunner:
         self.episode_max_frames = episode_max_frames
         self.attacker = attacker
         self.deterministic_action_sel = True
-        
+
         self.pbar = None
         self.current_run_n_episodes = 0
         self._reset_current_episode_stats()
-        
+
     def _reset_current_episode_stats(self):
         self.current_episode_reward = np.zeros(self.env.num_envs)
         self.current_episode_total_steps = 0
-        
+
     def _step_env(self, action):
         observation, reward, done, _ = self.env.step(action)
         self.current_episode_reward += reward
@@ -46,7 +47,7 @@ class AttackRunner:
     def run(self, n_episodes: int) -> AttackResults:
         all_episode_rewards = np.zeros(n_episodes)
         all_presence = np.zeros(n_episodes)
-        
+
         pbar = trange(n_episodes, desc="Running episodes")
         for episode in pbar:
             observation = self.env.reset()
@@ -59,16 +60,17 @@ class AttackRunner:
                 action = self.victim.choose_action(attacker_observation, deterministic=self.deterministic_action_sel)
                 observation, is_done = self._step_env(action)
                 n_frames += 1
-                
-            all_episode_rewards[episode] = self.current_episode_reward
+
+            # Take mean across different environements
+            all_episode_rewards[episode] = self.current_episode_reward.mean()
             rolling_mean_reward = all_episode_rewards[: episode + 1].mean()
             rolling_mean_presence = all_presence[: episode + 1].mean()
-            
+
             pbar.set_description(
                 f"Ep {episode + 1}/{n_episodes} | RollingAvgReward: {rolling_mean_reward:.2f} | RollingAvgAttacks: {rolling_mean_presence:.2f}"
             )
             self._reset_current_episode_stats()
-            
+
         return AttackResults(
             average_reward=all_episode_rewards.mean(),
             std_reward=all_episode_rewards.std(),

@@ -6,6 +6,8 @@ import numpy as np
 
 
 T = TypeVar("T", bound=BaseAlgorithm)
+
+
 class BaseVictim(Generic[T]):
     def __init__(self, model: T):
         self.model = model
@@ -14,12 +16,13 @@ class BaseVictim(Generic[T]):
         if self.model.observation_space.shape and obs.dim() == len(self.model.observation_space.shape):
             obs = obs.unsqueeze(0)
         return obs
-    
-    def choose_action(self, observation: VecEnvObs, deterministic: bool) -> tuple[np.ndarray, tuple[np.ndarray, ...] | None]:
+
+    def choose_action(self, observation: VecEnvObs, deterministic: bool) -> np.ndarray:
         if isinstance(observation, tuple) or isinstance(observation, dict):
             raise NotImplementedError("Tuple and dictionary observations not supported")
-            
-        return self.model.predict(observation, deterministic=deterministic)
+
+        action, _ = self.model.predict(observation, deterministic=deterministic)
+        return action
 
     def model_parameters(self) -> Iterator[torch.nn.Parameter]:
         raise NotImplementedError("Must be implemented by child class.")
