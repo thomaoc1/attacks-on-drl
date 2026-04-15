@@ -6,10 +6,6 @@ from tqdm import trange
 from attacks_on_drl.attacker.attacker import BaseAttacker
 from attacks_on_drl.victim.victim import BaseVictim
 
-@dataclass
-class CurrentEpisodeLog:
-    total_reward: np.ndarray = np.zeros(1)
-    steps: int = 0
 
 @dataclass
 class AttackResults:
