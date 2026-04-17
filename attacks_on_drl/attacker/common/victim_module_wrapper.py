@@ -3,6 +3,7 @@ from typing import Iterator
 
 from attacks_on_drl.victim.victim import BaseVictim
 
+
 class VictimModuleWrapper(torch.nn.Module):
     def __init__(self, victim_agent: BaseVictim):
         super().__init__()
@@ -13,4 +14,3 @@ class VictimModuleWrapper(torch.nn.Module):
 
     def parameters(self, recurse: bool = True) -> Iterator[torch.nn.Parameter]:
         return self.agent.model_parameters()
-

@@ -29,7 +29,7 @@ class DQNVictim(BaseVictim[DQN]):
 
         if not isinstance(observation, torch.Tensor):
             observation = torch.from_numpy(observation)
-            
+
         observation = self._ensure_batch(observation)
         q_values = self.model.q_net(observation)
 
