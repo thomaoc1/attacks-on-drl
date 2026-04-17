@@ -30,5 +30,5 @@ class BaseVictim(Generic[T]):
     def eval_state(self, observation: VecEnvObs) -> torch.Tensor:
         raise NotImplementedError("Must be implemented by child class.")
 
-    def get_action_logits(self, observation: VecEnvObs) -> torch.Tensor:
+    def get_action_logits(self, observation: VecEnvObs | torch.Tensor) -> torch.Tensor:
         raise NotImplementedError("Must be implemented by child class.")

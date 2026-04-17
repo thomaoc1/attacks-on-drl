@@ -23,12 +23,14 @@ class DQNVictim(BaseVictim[DQN]):
 
         return v_value.unsqueeze(1)
 
-    def get_action_logits(self, observation: VecEnvObs) -> torch.Tensor:
+    def get_action_logits(self, observation: VecEnvObs | torch.Tensor) -> torch.Tensor:
         if isinstance(observation, tuple) or isinstance(observation, dict):
             raise NotImplementedError("Tuple and dictionary observations not supported")
 
-        tensor_observation = torch.from_numpy(observation)
-        tensor_observation = self._ensure_batch(tensor_observation)
-        q_values = self.model.q_net(tensor_observation)
+        if not isinstance(observation, torch.Tensor):
+            observation = torch.from_numpy(observation)
+            
+        observation = self._ensure_batch(observation)
+        q_values = self.model.q_net(observation)
 
         return q_values

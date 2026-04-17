@@ -1,23 +1,10 @@
-from typing import Iterator
-
 from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs
 import torch
 from torchattacks import FGSM
 
 from attacks_on_drl.attacker.attacker import BaseAttacker
+from attacks_on_drl.attacker.common.victim_module_wrapper import VictimModuleWrapper
 from attacks_on_drl.victim.victim import BaseVictim
-
-
-class VictimModuleWrapper(torch.nn.Module):
-    def __init__(self, victim_agent: BaseVictim):
-        super().__init__()
-        self.agent = victim_agent
-
-    def forward(self, obs):
-        return self.agent.get_action_logits(obs)
-
-    def parameters(self, recurse: bool = True) -> Iterator[torch.nn.Parameter]:
-        return self.agent.model_parameters()
 
 
 class ValueFunctionAttacker(BaseAttacker):
