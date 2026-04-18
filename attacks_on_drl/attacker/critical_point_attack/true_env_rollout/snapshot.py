@@ -41,7 +41,7 @@ def save_env_snapshot(env) -> list:
     snapshots = []
     for kind, wrapper in _iter_chain(env):
         if hasattr(wrapper, "ale"):
-            snapshots.append((kind, "ale", wrapper, wrapper.ale.cloneState()))
+            snapshots.append((kind, "ale", wrapper, wrapper.ale.cloneState()))  # type: ignore[attr-defined]
         elif kind == "dummy":
             state = {k: _safe_deepcopy(v) for k, v in wrapper.__dict__.items() if k != "envs"}
             snapshots.append((kind, "generic", wrapper, state))
