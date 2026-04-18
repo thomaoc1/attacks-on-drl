@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 import numpy as np
-from stable_baselines3.common.vec_env import VecEnv
+from stable_baselines3.common.vec_env.dummy_vec_env import DummyVecEnv
 from tqdm import trange
 
 from attacks_on_drl.attacker.attacker import BaseAttacker
@@ -19,7 +19,7 @@ class AttackResults:
 class AttackRunner:
     def __init__(
         self,
-        env: VecEnv,
+        env: DummyVecEnv,
         attacker: BaseAttacker,
         victim: BaseVictim,
         episode_max_frames: int | float = float("inf"),
