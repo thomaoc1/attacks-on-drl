@@ -4,7 +4,7 @@ from torchattacks import FGSM
 
 from attacks_on_drl.attacker.attacker import BaseAttacker
 from attacks_on_drl.attacker.common.victim_module_wrapper import VictimModuleWrapper
-from attacks_on_drl.victim.victim import BaseVictim
+from attacks_on_drl.victim.base_victim import BaseVictim
 
 
 class ValueFunctionAttacker(BaseAttacker):

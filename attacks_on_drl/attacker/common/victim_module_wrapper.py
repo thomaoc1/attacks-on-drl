@@ -1,7 +1,7 @@
 import torch
 from typing import Iterator
 
-from attacks_on_drl.victim.victim import BaseVictim
+from attacks_on_drl.victim.base_victim import BaseVictim
 
 
 class VictimModuleWrapper(torch.nn.Module):

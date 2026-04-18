@@ -5,15 +5,17 @@ from gymnasium.spaces import Discrete
 import numpy as np
 import torch
 from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs
-from stable_baselines3.common.vec_env.dummy_vec_env import DummyVecEnv
 
-from attacks_on_drl.attacker.critical_point_attack.ale_types import ALEEnvProtocol
-from attacks_on_drl.victim.victim import BaseVictim
+from attacks_on_drl.attacker.critical_point_attack.true_env_rollout.wrappers import ScaledAtariVecWrapper
+
+from .ale_types import ALEEnvProtocol
+from .snapshot import env_snapshot, restore_env_snapshot
+from attacks_on_drl.victim.base_victim import BaseVictim
 
 
 class RamRolloutHelper:
     def __init__(
-        self, env: DummyVecEnv, victim: BaseVictim, action_enumeration_len: int, baseline_state_distance: int
+        self, env: ScaledAtariVecWrapper, victim: BaseVictim, action_enumeration_len: int, baseline_state_distance: int
     ) -> None:
         assert action_enumeration_len > 0, "Action enumeration length must be greater than 0."
         assert action_enumeration_len <= baseline_state_distance, (
@@ -41,36 +43,41 @@ class RamRolloutHelper:
         return self.action_enumeration[maximising_idx]
 
     def collect_all_final_ram(self, observation: VecEnvObs) -> torch.Tensor:
-        if isinstance(observation, tuple) or isinstance(observation, dict):
+        if isinstance(observation, (tuple, dict)):
             raise NotImplementedError("Tuple and dictionary observations not supported")
 
         real_states = []
-        original_state = self.env0.clone_state()
+        with env_snapshot(self.env) as snapshot:
+            for action_sequence in self.action_enumeration_np:
+                current_obs = observation
 
-        for action_sequence in self.action_enumeration_np:
-            for action in action_sequence:
-                current_observation, _, _, _ = self.env.step(action)
+                done = False
+                for action in action_sequence:
+                    if done:
+                        break
+                    current_obs, _, done, _ = self.env.step(action)
 
-            for _ in range(self.baseline_state_distance - self.action_enumeration_len):
-                action = self.victim.choose_action(current_observation, deterministic=True)
-                current_observation, _, _, _ = self.env.step(action)
+                for _ in range(self.baseline_state_distance - self.action_enumeration_len):
+                    if done:
+                        break
+                    action = self.victim.choose_action(current_obs, deterministic=True)
+                    current_obs, _, done, _ = self.env.step(action)
 
-            real_states.append(torch.from_numpy(self.env0.ale.getRAM()))
-            self.env0.restore_state(original_state)
+                real_states.append(torch.from_numpy(self.env0.ale.getRAM()))
+                restore_env_snapshot(snapshot)
 
         return torch.stack(real_states)
 
     def collect_baseline_observation(self, observation: VecEnvObs) -> torch.Tensor:
-        if isinstance(observation, tuple) or isinstance(observation, dict):
+        if isinstance(observation, (tuple, dict)):
             raise NotImplementedError("Tuple and dictionary observations not supported")
 
-        original_state = self.env0.clone_state()
-        for _ in range(self.baseline_state_distance):
-            action = self.victim.choose_action(observation, deterministic=True)
-            observation, _, _, _ = self.env.step(action)
+        with env_snapshot(self.env):
+            current_obs = observation
+            for _ in range(self.baseline_state_distance):
+                action = self.victim.choose_action(current_obs, deterministic=True)
+                current_obs, _, _, _ = self.env.step(action)
 
-        final_ram_state = self.env0.ale.getRAM()
-        self.env0.restore_state(original_state)
+            final_ram = torch.from_numpy(self.env0.ale.getRAM()).unsqueeze(0)
 
-        final_ram_state = torch.from_numpy(final_ram_state).unsqueeze(0)
-        return final_ram_state
+        return final_ram

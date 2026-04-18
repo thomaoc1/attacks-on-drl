@@ -5,7 +5,7 @@ from stable_baselines3.common.vec_env.dummy_vec_env import DummyVecEnv
 from tqdm import trange
 
 from attacks_on_drl.attacker.attacker import BaseAttacker
-from attacks_on_drl.victim.victim import BaseVictim
+from attacks_on_drl.victim.base_victim import BaseVictim
 
 
 @dataclass

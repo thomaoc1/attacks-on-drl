@@ -3,27 +3,30 @@ from typing import cast
 import torch
 import torchattacks
 from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs
-from stable_baselines3.common.vec_env.dummy_vec_env import DummyVecEnv
 
 from attacks_on_drl.attacker.attacker import BaseAttacker
 from attacks_on_drl.attacker.common import VictimModuleWrapper
-from attacks_on_drl.attacker.critical_point_attack.ale_types import ALEEnvProtocol
 from attacks_on_drl.attacker.critical_point_attack.divergence import AtariDivergenceFunction
-from attacks_on_drl.attacker.critical_point_attack.ram_rollout_helper import RamRolloutHelper
-from attacks_on_drl.victim.victim import BaseVictim
+from attacks_on_drl.attacker.critical_point_attack.true_env_rollout.ale_types import ALEEnvProtocol
+from attacks_on_drl.attacker.critical_point_attack.true_env_rollout.ram_rollout_helper import RamRolloutHelper
+from attacks_on_drl.attacker.critical_point_attack.true_env_rollout.wrappers import ScaledAtariVecWrapper
+from attacks_on_drl.victim.base_victim import BaseVictim
 
 
 class CriticalPointAttack(BaseAttacker):
     def __init__(
-        self, env: DummyVecEnv, victim: BaseVictim, attack_threshold: float, cw_kwargs: dict | None = None
+        self,
+        env: ScaledAtariVecWrapper,
+        victim: BaseVictim,
+        attack_threshold: float,
+        cw_kwargs: dict | None = None,
     ) -> None:
         super().__init__(victim=victim)
 
-        self.attack_threshold = attack_threshold
         self.rollout_helper = RamRolloutHelper(env, victim, 2, 2)
         env0 = cast(ALEEnvProtocol, env.envs[0].unwrapped)
         self.divergence_function = AtariDivergenceFunction(env0.spec.id)
-
+        self.attack_threshold = attack_threshold
         wrapped_victim = VictimModuleWrapper(self.victim)
 
         if not cw_kwargs:

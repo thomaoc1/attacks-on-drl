@@ -59,7 +59,6 @@ class AtariDivergenceFunction:
         player_ys = self._get_player_y(final_ram_state)
         ball_xs = final_ram_state[:, self._annotations["ball_x"]]
         ball_ys = final_ram_state[:, self._annotations["ball_y"]]
-
         player_ball_distance = torch.sqrt((player_xs - ball_xs) ** 2 + (player_ys - ball_ys) ** 2)
         is_dropped = self._is_dropped(ball_xs, ball_ys)
         return player_ball_distance * is_dropped
