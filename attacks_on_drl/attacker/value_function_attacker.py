@@ -15,9 +15,6 @@ class ValueFunctionAttacker(BaseAttacker):
         wrapped_victim = VictimModuleWrapper(self.victim)
         self._perturbation_method = FGSM(wrapped_victim, eps=eps)
 
-    def _perturb_observation(self, observation: torch.Tensor) -> torch.Tensor:
-        return observation
-
     def step(self, observation: VecEnvObs) -> tuple[VecEnvObs, bool]:
         value = self.victim.eval_state(observation).item()
         is_attacked = value > self.attack_threshold
