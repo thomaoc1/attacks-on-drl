@@ -7,7 +7,7 @@ from stable_baselines3.common.vec_env import VecEnv
 from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs
 
 from attacks_on_drl.attacker.critical_point_attack.rollout_helper import RolloutHelper
-from attacks_on_drl.victim.base_victim import BaseVictim
+from attacks_on_drl.victim.common import BaseVictim
 
 from .snapshot import env_snapshot, restore_env_snapshot
 

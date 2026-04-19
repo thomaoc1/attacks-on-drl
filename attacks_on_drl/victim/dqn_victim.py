@@ -4,7 +4,7 @@ import torch
 from stable_baselines3 import DQN
 from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs
 
-from attacks_on_drl.victim.base_victim import BaseVictim
+from .common import BaseVictim
 
 
 class DQNVictim(BaseVictim[DQN]):
