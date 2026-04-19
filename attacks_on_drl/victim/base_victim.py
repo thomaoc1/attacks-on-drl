@@ -1,9 +1,9 @@
-from typing import Generic, TypeVar, Iterator
+from typing import Generic, Iterator, TypeVar
+
+import numpy as np
+import torch
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs
-import torch
-import numpy as np
-
 
 T = TypeVar("T", bound=BaseAlgorithm)
 

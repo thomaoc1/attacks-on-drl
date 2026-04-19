@@ -1,5 +1,6 @@
-from copy import deepcopy
 from contextlib import contextmanager
+from copy import deepcopy
+
 from stable_baselines3.common.vec_env import VecEnvWrapper
 from stable_baselines3.common.vec_env.dummy_vec_env import DummyVecEnv
 

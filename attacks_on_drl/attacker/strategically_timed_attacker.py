@@ -1,7 +1,8 @@
 import torch
 import torch.nn.functional as F
-from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs
 import torchattacks
+from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs
+
 from attacks_on_drl.attacker.base_attacker import BaseAttacker
 from attacks_on_drl.attacker.common import VictimModuleWrapper
 from attacks_on_drl.victim.base_victim import BaseVictim

@@ -1,5 +1,5 @@
-from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs
 import torch
+from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs
 from torchattacks import FGSM
 
 from attacks_on_drl.attacker.base_attacker import BaseAttacker

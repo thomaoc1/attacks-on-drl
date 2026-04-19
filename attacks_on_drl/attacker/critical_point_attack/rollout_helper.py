@@ -1,4 +1,5 @@
 from typing import Protocol
+
 import torch
 from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs
 

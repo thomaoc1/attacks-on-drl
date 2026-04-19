@@ -1,6 +1,5 @@
 import torch
 
-
 RAM_ANNOTATIONS = {
     "pong": dict(
         player_x=46,
