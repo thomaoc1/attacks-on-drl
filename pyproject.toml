@@ -1,7 +1,11 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "attacks-on-drl"
 version = "0.1.0"
-description = "Add your description here"
+description = "Framework for existing attacks on trained StableBaselines3 DRL policies."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -19,3 +23,7 @@ dev = [
 
 [tool.ruff]
 line-length = 120
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["attacks_on_drl*"]
