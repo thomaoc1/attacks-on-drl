@@ -1,21 +1,20 @@
 from itertools import product
-from typing import cast
 
-from gymnasium.spaces import Discrete
 import numpy as np
 import torch
+from gymnasium.spaces import Discrete
+from stable_baselines3.common.vec_env import VecEnv
 from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs
 
-from attacks_on_drl.attacker.critical_point_attack.true_env_rollout.wrappers import ScaledAtariVecWrapper
-
-from .ale_types import ALEEnvProtocol
-from .snapshot import env_snapshot, restore_env_snapshot
+from attacks_on_drl.attacker.critical_point_attack.rollout_helper import RolloutHelper
 from attacks_on_drl.victim.base_victim import BaseVictim
 
+from .snapshot import env_snapshot, restore_env_snapshot
 
-class RamRolloutHelper:
+
+class RamRolloutHelper(RolloutHelper):
     def __init__(
-        self, env: ScaledAtariVecWrapper, victim: BaseVictim, action_enumeration_len: int, baseline_state_distance: int
+        self, env: VecEnv, victim: BaseVictim, action_enumeration_len: int, baseline_state_distance: int
     ) -> None:
         assert action_enumeration_len > 0, "Action enumeration length must be greater than 0."
         assert action_enumeration_len <= baseline_state_distance, (
@@ -23,7 +22,10 @@ class RamRolloutHelper:
         )
 
         self.env = env
-        self.env0 = cast(ALEEnvProtocol, self.env.envs[0].unwrapped)
+        self.env_ale = self.env.get_attr("ale")[0]
+        if self.env_ale is None:
+            raise ValueError("Environment must be from ALE.")
+
         self.victim = victim
         self.action_enumeration_len = action_enumeration_len
         self.baseline_state_distance = baseline_state_distance
@@ -42,7 +44,7 @@ class RamRolloutHelper:
     def get_action_sequence(self, maximising_idx: int) -> tuple[int, ...]:
         return self.action_enumeration[maximising_idx]
 
-    def collect_all_final_ram(self, observation: VecEnvObs) -> torch.Tensor:
+    def collect_all_rollout_observations(self, observation: VecEnvObs) -> torch.Tensor:
         if isinstance(observation, (tuple, dict)):
             raise NotImplementedError("Tuple and dictionary observations not supported")
 
@@ -63,7 +65,7 @@ class RamRolloutHelper:
                     action = self.victim.choose_action(current_obs, deterministic=True)
                     current_obs, _, done, _ = self.env.step(action)
 
-                real_states.append(torch.from_numpy(self.env0.ale.getRAM()))
+                real_states.append(torch.from_numpy(self.env_ale.getRAM()))
                 restore_env_snapshot(snapshot)
 
         return torch.stack(real_states)
@@ -78,6 +80,6 @@ class RamRolloutHelper:
                 action = self.victim.choose_action(current_obs, deterministic=True)
                 current_obs, _, _, _ = self.env.step(action)
 
-            final_ram = torch.from_numpy(self.env0.ale.getRAM()).unsqueeze(0)
+            final_ram = torch.from_numpy(self.env_ale.getRAM()).unsqueeze(0)
 
         return final_ram
