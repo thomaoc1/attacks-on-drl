@@ -2,7 +2,7 @@ from typing import Iterator
 
 import torch
 
-from attacks_on_drl.victim.base_victim import BaseVictim
+from attacks_on_drl.victim.common.base_victim import BaseVictim
 
 
 class VictimModuleWrapper(torch.nn.Module):
