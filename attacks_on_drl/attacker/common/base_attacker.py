@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs
 
-from attacks_on_drl.victim.base_victim import BaseVictim
+from attacks_on_drl.victim.common import BaseVictim
 
 
 class BaseAttacker(ABC):
