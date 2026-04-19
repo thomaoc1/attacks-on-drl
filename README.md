@@ -21,8 +21,9 @@ runner.run(n_episodes=10)
 
 1. FGSM $\ell_\infty$ Attacker [1]
 2. Value Function Attack [2]
-3. Strategically Timed Attack [3]
-4. Critical Point Attack [4]
+3. FGSM Every N Steps Attacker [2]
+4. Strategically Timed Attack [3]
+5. Critical Point Attack [4]
 
 
 ## Adding A Custom Attack
