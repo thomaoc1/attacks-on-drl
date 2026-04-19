@@ -7,7 +7,7 @@ from stable_baselines3.common.vec_env.base_vec_env import VecEnvObs
 
 from attacks_on_drl.attacker.common import VictimModuleWrapper
 from attacks_on_drl.attacker.critical_point_attack.rollout_helper import RolloutHelper
-from attacks_on_drl.victim.base_victim import BaseVictim
+from attacks_on_drl.victim.common import BaseVictim
 from attacks_on_drl.attacker.common import BaseAttacker
 
 
