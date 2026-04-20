@@ -8,12 +8,12 @@ class ActorCriticVictim(BaseVictim):
     def model_parameters(self):
         return self.model.policy.features_extractor.parameters()
 
-    def eval_state(self, observation: VecEnvObs) -> torch.Tensor:
+    def eval_state(self, observation: VecEnvObs | torch.Tensor) -> torch.Tensor:
         if isinstance(observation, tuple) or isinstance(observation, dict):
             raise NotImplementedError("Tuple and dictionary observations not supported")
 
-        tensor_observation = torch.from_numpy(observation)
-        tensor_observation = self._ensure_batch(tensor_observation)
+        if not isinstance(observation, torch.Tensor):
+            observation = torch.from_numpy(observation)
 
         return self.model.policy.predict_values(observation)
 
