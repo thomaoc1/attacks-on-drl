@@ -14,6 +14,6 @@ class FGSMAttacker(BaseAttacker):
         wrapped_victim = VictimModuleWrapper(self.victim)
         self._perturbation_method = FGSM(wrapped_victim, eps=eps)
 
-    def step(self, observation: VecEnvObs) -> tuple[VecEnvObs, bool]:
-        actions = torch.tensor(self.victim.choose_action(observation, deterministic=True))
-        return self._perturbation_method(torch.from_numpy(observation), actions), True
+    def step(self, obs: VecEnvObs) -> tuple[VecEnvObs, bool]:
+        actions = torch.tensor(self.victim.choose_action(obs, deterministic=True))
+        return self._perturbation_method(torch.from_numpy(obs), actions), True

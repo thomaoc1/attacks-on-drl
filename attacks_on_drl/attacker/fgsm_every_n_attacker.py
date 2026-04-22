@@ -17,11 +17,11 @@ class FGSMEveryNAttacker(BaseAttacker):
         self.current_step = 0
         self.current_perturbation = None
 
-    def step(self, observation: VecEnvObs) -> tuple[VecEnvObs, bool]:
-        tens_observation = torch.from_numpy(observation)
+    def step(self, obs: VecEnvObs) -> tuple[VecEnvObs, bool]:
+        tens_obs = torch.from_numpy(obs)
         if self.current_step % self.attack_every_n_steps == 0:
-            actions = torch.tensor(self.victim.choose_action(observation, deterministic=True))
-            self.current_perturbation = self._perturbation_method(tens_observation, actions)
+            actions = torch.tensor(self.victim.choose_action(obs, deterministic=True))
+            self.current_perturbation = self._perturbation_method(tens_obs, actions)
 
         self.current_step += 1
         assert self.current_perturbation is not None, f"No perturbation computed on step {self.current_step}."

@@ -40,10 +40,10 @@ class AttackRunner:
         self.current_episode_total_steps = 0
 
     def _step_env(self, action):
-        observation, reward, done, _ = self.env.step(action)
+        obs, reward, done, _ = self.env.step(action)
         self.current_episode_reward += reward
         self.current_episode_total_steps += 1
-        return observation, done
+        return obs, done
 
     def run(self, n_episodes: int) -> AttackResults:
         all_episode_rewards = np.zeros(n_episodes)
@@ -51,15 +51,15 @@ class AttackRunner:
 
         pbar = trange(n_episodes, desc="Running episodes")
         for episode in pbar:
-            observation = self.env.reset()
+            obs = self.env.reset()
             is_done = False
             n_frames = 0
             while not is_done and n_frames < self.episode_max_frames:
-                attacker_observation, is_attacked = self.attacker.step(observation)
+                attacker_obs, is_attacked = self.attacker.step(obs)
                 if is_attacked:
                     all_presence[episode] += 1
-                action = self.victim.choose_action(attacker_observation, deterministic=self.deterministic_action_sel)
-                observation, is_done = self._step_env(action)
+                action = self.victim.choose_action(attacker_obs, deterministic=self.deterministic_action_sel)
+                obs, is_done = self._step_env(action)
                 n_frames += 1
 
             # Take mean across different environements

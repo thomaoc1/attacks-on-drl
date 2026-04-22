@@ -17,18 +17,21 @@ class BaseVictim(Generic[T]):
             obs = obs.unsqueeze(0)
         return obs
 
-    def choose_action(self, observation: VecEnvObs, deterministic: bool) -> np.ndarray:
-        if isinstance(observation, tuple) or isinstance(observation, dict):
+    def choose_action(self, obs: VecEnvObs | torch.Tensor, deterministic: bool) -> np.ndarray:
+        if isinstance(obs, tuple) or isinstance(obs, dict):
             raise NotImplementedError("Tuple and dictionary observations not supported")
 
-        action, _ = self.model.predict(observation, deterministic=deterministic)
+        if isinstance(obs, torch.Tensor):
+            obs = obs.numpy()
+
+        action, _ = self.model.predict(obs, deterministic=deterministic)
         return action
 
     def model_parameters(self) -> Iterator[torch.nn.Parameter]:
         raise NotImplementedError("Must be implemented by child class.")
 
-    def eval_state(self, observation: VecEnvObs | torch.Tensor) -> torch.Tensor:
+    def eval_state(self, obs: VecEnvObs | torch.Tensor) -> torch.Tensor:
         raise NotImplementedError("Must be implemented by child class.")
 
-    def get_action_logits(self, observation: VecEnvObs | torch.Tensor) -> torch.Tensor:
+    def get_action_logits(self, obs: VecEnvObs | torch.Tensor) -> torch.Tensor:
         raise NotImplementedError("Must be implemented by child class.")

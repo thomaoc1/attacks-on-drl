@@ -20,14 +20,14 @@ class StrategicallyTimedAttacker(BaseAttacker):
         self._perturbation_method = torchattacks.CW(wrapped_victim, **cw_kwargs)
         self._perturbation_method.set_mode_targeted_by_label()
 
-    def step(self, observation: VecEnvObs) -> tuple[VecEnvObs, bool]:
-        policy_logits = self.victim.get_action_logits(observation)
+    def step(self, obs: VecEnvObs) -> tuple[VecEnvObs, bool]:
+        policy_logits = self.victim.get_action_logits(obs)
         softmax_logits = F.softmax(policy_logits, dim=1)
         attack_indicator = softmax_logits.max() - softmax_logits.min()
 
         if attack_indicator > self.attack_threshold:
-            tens_observation = torch.from_numpy(observation)
-            adversarial_observation = self._perturbation_method(tens_observation, softmax_logits.argmin(dim=1)).numpy()
-            return adversarial_observation, True
+            tens_obs = torch.from_numpy(obs)
+            adversarial_obs = self._perturbation_method(tens_obs, softmax_logits.argmin(dim=1)).numpy()
+            return adversarial_obs, True
 
-        return observation, False
+        return obs, False

@@ -33,22 +33,19 @@ from attacks_on_drl.attacker.common import BaseAttacker
 
 class EveryOtherStepAttacker(BaseAttacker):
     def __init__(self, victim: BaseVictim) -> None:
-        super().__init__()
-        self.victim = victim
-        
+        super().__init__(victim=victim)
         wrapped_victim = VictimModuleWrapper(self.victim)
         self._perturbation_method = FGSM(wrapped_victim, eps=eps)
         
         self.attack = True
     
-    def step(self, observation: VecEnvObs) -> tuple[VecEnvObs, bool]:
+    def step(self, obs: VecEnvObs) -> tuple[VecEnvObs, bool]:
         if self.attack:
-            actions = torch.tensor(self.victim.choose_action(observation, deterministic=True))
-            observation = self._perturbation_method(torch.from_numpy(observation)).numpy()
+            actions = torch.tensor(self.victim.choose_action(obs, deterministic=True))
+            obs = self._perturbation_method(torch.from_numpy(obs)).numpy()
        
-        attacked = self.attack
         self.attack = not self.attack
-        return obseration, attacked
+        return obs, not self.attack
 ```
 
 ## References

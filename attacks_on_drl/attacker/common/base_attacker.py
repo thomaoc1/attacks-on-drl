@@ -11,5 +11,5 @@ class BaseAttacker(ABC):
         self.victim = victim
 
     @abstractmethod
-    def step(self, observation: VecEnvObs) -> tuple[VecEnvObs, bool]:
+    def step(self, obs: VecEnvObs) -> tuple[VecEnvObs, bool]:
         pass

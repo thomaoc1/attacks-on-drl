@@ -44,14 +44,14 @@ class RamRolloutHelper(RolloutHelper):
     def get_action_sequence(self, maximising_idx: int) -> tuple[int, ...]:
         return self.action_enumeration[maximising_idx]
 
-    def collect_all_rollout_observations(self, observation: VecEnvObs) -> torch.Tensor:
-        if isinstance(observation, (tuple, dict)):
+    def collect_all_rollout_obs(self, obs: VecEnvObs) -> torch.Tensor:
+        if isinstance(obs, (tuple, dict)):
             raise NotImplementedError("Tuple and dictionary observations not supported")
 
         real_states = []
         with env_snapshot(self.env) as snapshot:
             for action_sequence in self.action_enumeration_np:
-                current_obs = observation
+                current_obs = obs
 
                 done = False
                 for action in action_sequence:
@@ -70,12 +70,12 @@ class RamRolloutHelper(RolloutHelper):
 
         return torch.stack(real_states)
 
-    def collect_baseline_observation(self, observation: VecEnvObs) -> torch.Tensor:
-        if isinstance(observation, (tuple, dict)):
+    def collect_baseline_obs(self, obs: VecEnvObs) -> torch.Tensor:
+        if isinstance(obs, (tuple, dict)):
             raise NotImplementedError("Tuple and dictionary observations not supported")
 
         with env_snapshot(self.env):
-            current_obs = observation
+            current_obs = obs
             for _ in range(self.baseline_state_distance):
                 action = self.victim.choose_action(current_obs, deterministic=True)
                 current_obs, _, _, _ = self.env.step(action)

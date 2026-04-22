@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "attacks-on-drl"
-version = "0.2.3"
+version = "0.2.5"
 description = "Framework for existing attacks on trained StableBaselines3 DRL policies."
 readme = "README.md"
 requires-python = ">=3.12"
